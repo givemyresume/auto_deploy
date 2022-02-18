@@ -36,9 +36,6 @@ resource "aws_instance" "webserver" {
 resource "aws_eip" "eip" {
   vpc      = true
   instance = aws_instance.webserver.id
-  provisioner "local-exec" {
-    command = "echo ${aws_eip.eip.public_dns} >> ./runtime_txts/webserver_public_dns.txt"
-  }
 }
 
 resource "aws_key_pair" "ssh-key" {
