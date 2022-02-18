@@ -11,7 +11,7 @@ terraform {
     organization = "example-org-bae840"
 
     workspaces {
-      name = "ghresume-builder"
+      name = "resume-builder"
     }
   }
 }
