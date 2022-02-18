@@ -21,7 +21,6 @@ provider "aws" {
 }
 
 
-
 resource "aws_instance" "webserver" {
   ami           = "ami-0f2e255ec956ade7f"
   instance_type = "t2.micro"
