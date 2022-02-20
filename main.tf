@@ -68,11 +68,9 @@ resource "aws_instance" "webserver" {
 
   provisioner "remote-exec" {
     inline = [
-      "export FAUNA_DB_KEY=${var.FAUNA_DB_KEY}",
-      "export GITHUB_TOKEN=${var.GITHUB_TOKEN}",
-      "export API_URL=${var.API_URL}",
       "git clone https://github.com/givemyresume/auto_deploy.git",
       "cd auto_deploy",
+      "echo 'FAUNA_DB_KEY=${var.FAUNA_DB_KEY}\nGITHUB_TOKEN=${var.GITHUB_TOKEN}\nAPI_URL=${var.API_URL}' > .env",
       # "docker-compose up | tee ./run.log" #skipping this command as it's not getting executed
     ]
   }
