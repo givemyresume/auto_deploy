@@ -73,7 +73,7 @@ resource "aws_instance" "webserver" {
       "export API_URL=${var.API_URL}",
       "git clone https://github.com/givemyresume/auto_deploy.git",
       "cd auto_deploy",
-      # "sudo docker-compose up --build | tee ./run.log" #skipping this command as it's not getting executed
+      # "docker-compose up | tee ./run.log" #skipping this command as it's not getting executed
     ]
   }
 }
