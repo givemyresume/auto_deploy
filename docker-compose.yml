@@ -1,0 +1,38 @@
+version: '3.4'
+
+services:      
+  api:
+    image: api
+    build:
+      context: .
+      dockerfile: ./Dockerfile-for-API
+    ports:
+      - "8001"
+    environment:
+      - FAUNA_DB_KEY
+      - GITHUB_TOKEN
+
+  website:
+    image: website
+    build:
+      context: .
+      dockerfile: ./Dockerfile-for-Website
+    ports:
+      - "8000"
+    environment:
+      - FAUNA_DB_KEY
+      - API_URL=http://api:8001
+    depends_on:
+      - api
+
+  nginx:
+    image: nginx
+    ports:
+      - 80:80
+      - "8000:8000"
+      - "8001:8001"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - website
+      - api

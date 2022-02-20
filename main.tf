@@ -21,19 +21,48 @@ provider "aws" {
 }
 
 
+variable "FAUNA_DB_KEY" {
+  type = string
+}
+
+variable "GITHUB_TOKEN" {
+  type = string
+}
+
+variable "API_URL" {
+  type = string
+}
+
+
+resource "tls_private_key" "terraform-key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "generated-key" {
+  key_name   = "generated-key"       # Create "generated-key" to AWS!!
+  public_key = tls_private_key.terraform-key.public_key_openssh
+
+  provisioner "local-exec" { # Create "generated-key.pem" to your computer!!
+    command = "echo '${tls_private_key.terraform-key.private_key_pem}' > ./server-key.pem; chmod 400 server-key.pem"
+  }
+}
+
+
 resource "aws_instance" "webserver" {
-  ami           = "ami-0f2e255ec956ade7f"
+  ami           = "ami-0b8959ac764ad4343"
   instance_type = "t2.micro"
   tags = {
     Name        = "webserver"
     Description = "Resume Builder Server"
   }
-  key_name               = "server-key"
+  key_name               = aws_key_pair.generated-key.key_name
   vpc_security_group_ids = [aws_security_group.server_sg.id]
   user_data              = file("./initiate_server.sh")
   connection {
     type = "ssh"
-    user = "appuser"
+    user = "ubuntu"
+    private_key = tls_private_key.terraform-key.private_key_pem
     host = self.public_ip
   }
 
@@ -42,16 +71,15 @@ resource "aws_instance" "webserver" {
       "export FAUNA_DB_KEY=${var.FAUNA_DB_KEY}",
       "export GITHUB_TOKEN=${var.GITHUB_TOKEN}",
       "export API_URL=${var.API_URL}",
-      "cd /website",
-      "nohup python3 manage.py runserver 8000 &",
-      "cd /api",
-      "nohup uvicorn main:app --reload --port 8001 &"
+      "git clone https://github.com/givemyresume/auto_deploy.git",
+      "cd auto_deploy",
+      # "sudo docker-compose up --build | tee ./run.log" #skipping this command as it's not getting executed
     ]
   }
 }
 
 resource "aws_eip_association" "eip_assoc" {
-  instance_id = aws_instance.webserver.id
+  instance_id   = aws_instance.webserver.id
   allocation_id = "eipalloc-085afc5d8993450ac"
 }
 
@@ -73,6 +101,12 @@ resource "aws_security_group" "server_sg" {
   ingress {
     from_port   = 443
     to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 8001
+    to_port     = 8001
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -98,3 +132,10 @@ resource "aws_volume_attachment" "ec2_attach" {
   volume_id   = aws_ebs_volume.storage_volume.id
 }
 
+output "webserver_public_ip" {
+  value = aws_instance.webserver.public_ip
+}
+
+output "webserver_public_dns" {
+  value = aws_instance.webserver.public_dns
+}
