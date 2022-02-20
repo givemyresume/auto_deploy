@@ -28,19 +28,31 @@ resource "aws_instance" "webserver" {
     Name        = "webserver"
     Description = "Resume Builder Server"
   }
-  key_name               = aws_key_pair.ssh-key.id
+  key_name               = "server-key"
   vpc_security_group_ids = [aws_security_group.server_sg.id]
   user_data              = file("./initiate_server.sh")
+  connection {
+    type = "ssh"
+    user = "appuser"
+    host = self.public_ip
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "export FAUNA_DB_KEY=${var.FAUNA_DB_KEY}",
+      "export GITHUB_TOKEN=${var.GITHUB_TOKEN}",
+      "export API_URL=${var.API_URL}",
+      "cd /website",
+      "nohup python3 manage.py runserver 8000 &",
+      "cd /api",
+      "nohup uvicorn main:app --reload --port 8001 &"
+    ]
+  }
 }
 
-resource "aws_eip" "eip" {
-  vpc      = true
-  instance = aws_instance.webserver.id
-}
-
-resource "aws_key_pair" "ssh-key" {
-  key_name   = "ssh-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKCI6j1VpcMgYLIxnE05BqXJnm/gcPUluURx6mrorSp/BVfs8K7Sdhn5gD/PphxhYohcJ+zA+u7yweg7/SJ1KUL+oDypH5vtIRCav13lyNYIGNvxevXAOwb6Yy7jYX5Qd4ZHCAF6c/9upx1ewCBj49W74CKvIwjEws3YRpk/cW9pmRxJ0nQq0dDlArqc734L8XkRpoSuwdKy65Zy0LViPRgYfwXezt/vS4XSGkFdYsN4aMjBAfAxESy4/b1oOcBbEptiJDBQugJjYPEAKXW8SVLtM+0Zw8TDJrWnd8ruzFuoP7lHIUOq/CNWDrrzzlmsU7noQfxGhwDhE5EuNc5ZW5 subhayu@FFT-ThinkPad-L490"
+resource "aws_eip_association" "eip_assoc" {
+  instance_id = aws_instance.webserver.id
+  allocation_id = "eipalloc-085afc5d8993450ac"
 }
 
 resource "aws_security_group" "server_sg" {
@@ -74,7 +86,7 @@ resource "aws_security_group" "server_sg" {
 
 resource "aws_ebs_volume" "storage_volume" {
   availability_zone = aws_instance.webserver.availability_zone
-  size              = 10
+  size              = 5
   tags = {
     Name = "instance storage"
   }
@@ -86,6 +98,3 @@ resource "aws_volume_attachment" "ec2_attach" {
   volume_id   = aws_ebs_volume.storage_volume.id
 }
 
-output "eip_dns" {
-  value = aws_eip.eip.public_dns
-}
