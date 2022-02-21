@@ -77,6 +77,7 @@ resource "aws_instance" "webserver" {
       "sudo apt-get -y update",
       "sudo apt-get -y install docker-ce docker-ce-cli containerd.io",
       "sudo service docker start",
+      "sudo apt-get -y update",
       "sudo apt install docker-compose -y",
       "git clone https://github.com/givemyresume/auto_deploy.git",
       "cd auto_deploy",
