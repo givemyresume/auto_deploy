@@ -77,13 +77,11 @@ resource "aws_instance" "webserver" {
       "sudo apt-get -y update",
       "sudo apt-get -y install docker-ce docker-ce-cli containerd.io",
       "sudo service docker start",
-      "sudo curl -L 'https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)' -o /usr/local/bin/docker-compose",
-      "sudo chmod +x /usr/local/bin/docker-compose",
-      "sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose",
+      "sudo apt install docker-compose -y",
       "git clone https://github.com/givemyresume/auto_deploy.git",
       "cd auto_deploy",
       "echo 'FAUNA_DB_KEY=${var.FAUNA_DB_KEY}\nGITHUB_TOKEN=${var.GITHUB_TOKEN}\nAPI_URL=${var.API_URL}' > .env",
-      "sudo docker ps; sudo docker images; sudo docker-compose version"
+      "sudo docker-compose -p resumebuilder up"
     ]
   }
 }
