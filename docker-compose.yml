@@ -27,9 +27,6 @@ services:
 
   nginx:
     image: nginx
-    build:
-      context: .
-      dockerfile: ./Dockerfile-for-Nginx
     ports:
       - "80:80"
       - "8000:8000"

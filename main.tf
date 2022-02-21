@@ -78,7 +78,8 @@ resource "aws_instance" "webserver" {
       "git clone https://github.com/givemyresume/auto_deploy.git",
       "cd auto_deploy",
       "echo 'FAUNA_DB_KEY=${var.FAUNA_DB_KEY}\nGITHUB_TOKEN=${var.GITHUB_TOKEN}\nAPI_URL=${var.API_URL}' > .env",
-      "sudo docker-compose up -d"
+      "sudo docker-compose up -d",
+      "sudo docker exec -d -u 0 auto_deploy_nginx_1 apt-get -y update && apt-get install -y certbot python3-certbot-nginx && certbot --nginx -d api.givemyresume.tech -d app.givemyresume.tech -n -m balasubhayu99@gmail.com --eff-email --agree-tos"
     ]
   }
 }
