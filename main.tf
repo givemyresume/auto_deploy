@@ -69,6 +69,17 @@ resource "aws_instance" "webserver" {
   provisioner "remote-exec" {
     inline = [
       "#!/bin/bash",
+      "sudo apt-get -y remove docker docker-engine docker.io containerd runc",
+      "sudo apt-get -y update",
+      "sudo apt-get -y install apt-transport-https software-properties-common git ca-certificates curl gnupg lsb-release",
+      "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
+      "sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
+      "sudo apt-get -y update",
+      "sudo apt-get -y install docker-ce docker-ce-cli containerd.io",
+      "sudo service docker start",
+      "sudo curl -L 'https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)' -o /usr/local/bin/docker-compose",
+      "sudo chmod +x /usr/local/bin/docker-compose",
+      "sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose",
       "git clone https://github.com/givemyresume/auto_deploy.git",
       "cd auto_deploy",
       "echo 'FAUNA_DB_KEY=${var.FAUNA_DB_KEY}\nGITHUB_TOKEN=${var.GITHUB_TOKEN}\nAPI_URL=${var.API_URL}' > .env",
