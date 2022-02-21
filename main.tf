@@ -75,11 +75,22 @@ resource "aws_instance" "webserver" {
       "echo ${var.SSH_PUB_KEY} >> /home/ubuntu/.ssh/authorized_keys && chown ubuntu: /home/ubuntu/.ssh/authorized_keys && chmod 0600 /home/ubuntu/.ssh/authorized_keys",
       "sudo apt-get -y remove docker docker-engine docker.io containerd runc",
       "sudo apt-get -y update && sudo apt-get -y install apt-transport-https software-properties-common git ca-certificates curl gnupg lsb-release && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable' && sudo apt-get -y update && sudo apt-get -y install docker-ce docker-ce-cli containerd.io && sudo service docker start && sudo apt-get -y update && sudo apt install docker-compose -y",
+      "sudo apt update && sudo apt install nginx -y",
       "git clone https://github.com/givemyresume/auto_deploy.git",
+      "git clone https://github.com/givemyresume/api.git",
+      "git clone https://github.com/givemyresume/website.git",
+      "git clone https://github.com/givemyresume/givemyresume.github.io.git",
+      "sudo cp /home/ubuntu/auto_deploy/server.conf /etc/nginx/conf.d",
+      "sudo unlink /etc/nginx/sites-enabled/default",
+      "sudo service nginx restart",
       "cd auto_deploy",
       "echo 'FAUNA_DB_KEY=${var.FAUNA_DB_KEY}\nGITHUB_TOKEN=${var.GITHUB_TOKEN}\nAPI_URL=${var.API_URL}' > .env",
-      "sudo docker-compose up -d",
-      "# sudo docker exec -d -u 0 auto_deploy_nginx_1 apt-get -y update && apt-get install -y certbot python3-certbot-nginx && certbot --nginx -d api.givemyresume.tech -d app.givemyresume.tech -n -m balasubhayu99@gmail.com --eff-email --agree-tos"
+      "nohup sudo docker-compose up >> /home/ubuntu/docker-compose-up.logs &",
+      "sudo apt -y update && sudo apt install certbot python3-certbot-nginx -y",
+      "sudo certbot --nginx -d api.givemyresume.tech -d app.givemyresume.tech -n -m balasubhayu99@gmail.com --eff-email --agree-tos",
+      "nohup /home/ubuntu/auto_deploy/git-repo-watcher -d /home/ubuntu/api >> /home/ubuntu/api.log &",
+      "nohup /home/ubuntu/auto_deploy/git-repo-watcher -d /home/ubuntu/website >> /home/ubuntu/website.log &",
+      "nohup /home/ubuntu/auto_deploy/git-repo-watcher -d /home/ubuntu/givemyresume.github.io >> /home/ubuntu/givemyresume.log &",
     ]
   }
 }
