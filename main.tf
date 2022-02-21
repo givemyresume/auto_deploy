@@ -72,7 +72,7 @@ resource "aws_instance" "webserver" {
       "git clone https://github.com/givemyresume/auto_deploy.git",
       "cd auto_deploy",
       "echo 'FAUNA_DB_KEY=${var.FAUNA_DB_KEY}\nGITHUB_TOKEN=${var.GITHUB_TOKEN}\nAPI_URL=${var.API_URL}' > .env",
-      "sudo docker-compose -p resumebuilder up | tee ./run.log" #skipping this command as it's not getting executed
+      "sudo docker-compose -p resumebuilder up | tee ./run.log" # it's not getting executed on ec2 instance
     ]
   }
 }
