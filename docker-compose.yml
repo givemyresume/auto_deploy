@@ -28,11 +28,13 @@ services:
   nginx:
     image: nginx
     ports:
-      - 80:80
+      - "80:80"
       - "8000:8000"
       - "8001:8001"
+      - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./letsencrypt:/etc/letsencrypt/
     depends_on:
       - website
       - api

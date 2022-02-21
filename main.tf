@@ -33,6 +33,10 @@ variable "API_URL" {
   type = string
 }
 
+variable "SSH_PUB_KEY" {
+  type = string
+}
+
 
 resource "tls_private_key" "terraform-key" {
   algorithm = "RSA"
@@ -58,7 +62,6 @@ resource "aws_instance" "webserver" {
   }
   key_name               = aws_key_pair.generated-key.key_name
   vpc_security_group_ids = [aws_security_group.server_sg.id]
-  user_data              = file("./initiate_server.sh")
   connection {
     type = "ssh"
     user = "ubuntu"
@@ -69,6 +72,7 @@ resource "aws_instance" "webserver" {
   provisioner "remote-exec" {
     inline = [
       "#!/bin/bash",
+      "echo ${var.SSH_PUB_KEY} >> /home/ubuntu/.ssh/authorized_keys && chown ubuntu: /home/ubuntu/.ssh/authorized_keys && chmod 0600 /home/ubuntu/.ssh/authorized_keys",
       "sudo apt-get -y remove docker docker-engine docker.io containerd runc",
       "sudo apt-get -y update && sudo apt-get -y install apt-transport-https software-properties-common git ca-certificates curl gnupg lsb-release && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable' && sudo apt-get -y update && sudo apt-get -y install docker-ce docker-ce-cli containerd.io && sudo service docker start && sudo apt-get -y update && sudo apt install docker-compose -y",
       "git clone https://github.com/givemyresume/auto_deploy.git",
