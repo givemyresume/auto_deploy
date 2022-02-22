@@ -1,6 +1,7 @@
 #!/bin/bash
 
-sudo docker-compose -f /home/ubuntu/auto_deploy/docker-compose.yml down
+cd /home/ubuntu/auto_deploy 
+sudo docker-compose down
 sudo docker-compose rm -f
-sudo docker system prune -a
-sudo docker-compose -f /home/ubuntu/auto_deploy/docker-compose.yml up --force-recreate --build -d
+sudo docker-compose up --force-recreate --build -d
+cd -
