@@ -12,8 +12,8 @@ services:
       - FAUNA_DB_KEY
       - GITHUB_TOKEN
     volumes:
-      - ./api:/api
-      - ./api/givemyresume.github.io:/api/givemyresume.github.io
+      - ./api:/api:rw
+      - ./api/givemyresume.github.io:/api/givemyresume.github.io:rw
 
   website:
     image: website
