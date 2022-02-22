@@ -11,12 +11,7 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update -y && \
     apt-get install -y git
 
-ADD "https://api.github.com/repos/givemyresume/api/commits?per_page=1" latest_commit
-
-RUN git clone https://github.com/givemyresume/api.git && \
-    cd /api && \
-    git clone https://github.com/givemyresume/givemyresume.github.io && \
-    git config --global user.email "balasubhayu99@gmail.com" && \
+RUN git config --global user.email "balasubhayu99@gmail.com" && \
     git config --global user.name "Subhayu Kumar Bala"
 
 WORKDIR /api

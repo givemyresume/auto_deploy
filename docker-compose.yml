@@ -11,6 +11,9 @@ services:
     environment:
       - FAUNA_DB_KEY
       - GITHUB_TOKEN
+    volumes:
+      - /home/ubuntu/api:/api:rw
+      - /home/ubuntu/api/givemyresume.github.io:/api/givemyresume.github.io:rw
 
   website:
     image: website
@@ -22,5 +25,7 @@ services:
     environment:
       - FAUNA_DB_KEY
       - API_URL
+    volumes:
+      - /home/ubuntu/website:/website
     depends_on:
       - api

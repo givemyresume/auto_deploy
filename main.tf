@@ -79,18 +79,15 @@ resource "aws_instance" "webserver" {
       "git clone https://github.com/givemyresume/auto_deploy.git",
       "git clone https://github.com/givemyresume/api.git",
       "git clone https://github.com/givemyresume/website.git",
-      "git clone https://github.com/givemyresume/givemyresume.github.io.git",
+      "cd /home/ubuntu/api && git clone https://github.com/givemyresume/givemyresume.github.io.git && cd -",
       "sudo cp /home/ubuntu/auto_deploy/server.conf /etc/nginx/conf.d",
       "sudo unlink /etc/nginx/sites-enabled/default",
       "sudo service nginx restart",
       "cd auto_deploy",
       "echo 'FAUNA_DB_KEY=${var.FAUNA_DB_KEY}\nGITHUB_TOKEN=${var.GITHUB_TOKEN}\nAPI_URL=${var.API_URL}' > .env",
-      "nohup sudo docker-compose up >> /home/ubuntu/docker-compose-up.logs &",
+      "sudo docker-compose up -d | tee /home/ubuntu/logs/dc_up.log",
       "sudo apt -y update && sudo apt install certbot python3-certbot-nginx -y",
-      "sudo certbot --nginx -d app.givemyresume.tech -n -m balasubhayu99@gmail.com --eff-email --agree-tos && sudo certbot --nginx -d api.givemyresume.tech -n -m balasubhayu99@gmail.com --eff-email --agree-tos",
-      "nohup /home/ubuntu/auto_deploy/git-repo-watcher -d /home/ubuntu/api &",
-      "nohup /home/ubuntu/auto_deploy/git-repo-watcher -d /home/ubuntu/website &",
-      "nohup /home/ubuntu/auto_deploy/git-repo-watcher -d /home/ubuntu/givemyresume.github.io &",
+      "at now +10 minutes -f /home/ubuntu/auto_deploy/run_later.sh && atq && at -c $(atq | grep '^[0-9]*' -o | head -n 1)"
     ]
   }
 }

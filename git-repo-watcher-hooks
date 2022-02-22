@@ -17,7 +17,7 @@ no_changes() {
 # $3 - Commit details
 change_pulled() {
     echo "Changes pulled: $*"
-    /home/ubuntu/auto_deploy/watcher-script.sh
+    # /home/ubuntu/auto_deploy/watcher-script.sh
 }
 
 # $1 - Git repository name
