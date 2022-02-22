@@ -21,6 +21,6 @@ services:
       - "8000:8000"
     environment:
       - FAUNA_DB_KEY
-      - API_URL=http://api:8001
+      - API_URL
     depends_on:
       - api
