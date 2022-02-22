@@ -12,10 +12,12 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update -y && \
     apt-get install -y git
 
-WORKDIR /website
+COPY ./website/requirements.txt .
 
 # Install pip requirements
 RUN python -m pip install -r requirements.txt
+
+WORKDIR /website
 
 # Creates a non-root user with an explicit UID and adds permission to access the /website folder
 # For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
