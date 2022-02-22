@@ -14,10 +14,12 @@ RUN apt-get update -y && \
 RUN git config --global user.email "balasubhayu99@gmail.com" && \
     git config --global user.name "Subhayu Kumar Bala"
 
-WORKDIR /api
+COPY ./api/requirements.txt .
 
 # Install pip requirements
 RUN python -m pip install -r requirements.txt
+
+WORKDIR /api
 
 # Adding a non-sudo user for security
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /api
