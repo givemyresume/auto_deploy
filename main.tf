@@ -37,6 +37,10 @@ variable "SSH_PUB_KEY" {
   type = string
 }
 
+variable "EMAIL_PASS" {
+  type = string
+}
+
 
 resource "tls_private_key" "terraform-key" {
   algorithm = "RSA"
@@ -80,11 +84,11 @@ resource "aws_instance" "webserver" {
       "cd /home/ubuntu/auto_deploy",
       "git clone https://github.com/givemyresume/api.git && chmod 777 api -R",
       "git clone https://github.com/givemyresume/website.git && chmod 777 website -R",
-      "cd /home/ubuntu/api && git clone https://github.com/givemyresume/givemyresume.github.io.git && cd -",
+      "cd /home/ubuntu/auto_deploy/api && git clone https://github.com/givemyresume/givemyresume.github.io.git && chmod 777 givemyresume.github.io -R && cd -",
       "sudo cp /home/ubuntu/auto_deploy/server.conf /etc/nginx/conf.d",
       "sudo unlink /etc/nginx/sites-enabled/default",
       "sudo service nginx restart",
-      "echo 'FAUNA_DB_KEY=${var.FAUNA_DB_KEY}\nGITHUB_TOKEN=${var.GITHUB_TOKEN}\nAPI_URL=${var.API_URL}' > .env",
+      "echo 'FAUNA_DB_KEY=${var.FAUNA_DB_KEY}\nGITHUB_TOKEN=${var.GITHUB_TOKEN}\nAPI_URL=${var.API_URL}\nEMAIL_PASS=${var.EMAIL_PASS}' > .env",
       "sudo docker-compose up -d | tee /home/ubuntu/logs/dc_up.log",
       "sudo apt -y update && sudo apt install certbot python3-certbot-nginx -y",
       "at now +5 minutes -f /home/ubuntu/auto_deploy/run_later.sh && atq && at -c $(atq | grep '^[0-9]*' -o | head -n 1)"
