@@ -59,7 +59,7 @@ resource "aws_key_pair" "generated-key" {
 
 resource "aws_instance" "webserver" {
   ami           = "ami-0b8959ac764ad4343"
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   tags = {
     Name        = "webserver"
     Description = "Resume Builder Server"
