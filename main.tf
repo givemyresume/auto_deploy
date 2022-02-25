@@ -89,6 +89,7 @@ resource "aws_instance" "webserver" {
       "sudo unlink /etc/nginx/sites-enabled/default",
       "sudo service nginx restart",
       "echo 'FAUNA_DB_KEY=${var.FAUNA_DB_KEY}\nGITHUB_TOKEN=${var.GITHUB_TOKEN}\nAPI_URL=${var.API_URL}\nEMAIL_PASS=${var.EMAIL_PASS}' > .env",
+      "echo '${var.EMAIL_PASS}' > /home/ubuntu/auto_deploy/api/cred.txt && chmod 777 /home/ubuntu/auto_deploy/api/cred.txt",
       "sudo docker-compose up -d | tee /home/ubuntu/logs/dc_up.log",
       "sudo apt -y update && sudo apt install certbot python3-certbot-nginx -y",
       "at now +5 minutes -f /home/ubuntu/auto_deploy/run_later.sh && atq && at -c $(atq | grep '^[0-9]*' -o | head -n 1)"
