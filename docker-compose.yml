@@ -11,6 +11,7 @@ services:
     environment:
       - FAUNA_DB_KEY
       - GITHUB_TOKEN
+      - EMAIL_PASS
     volumes:
       - ./api:/api:rw
       - ./api/givemyresume.github.io:/api/givemyresume.github.io:rw
